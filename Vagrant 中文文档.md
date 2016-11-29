@@ -252,7 +252,7 @@ Vagrantfile配置文件致力于对你的项目进行版本控制。如果你使
 
 从头开始构建一个虚拟机，是单调乏味和效率低下的，相比之下 Vagrant 使用一个基础的镜像快速的克隆出一个虚拟机。这些基础的镜像在Vagrant被称为**容器(boxes)**,在你创建一个新的Vagrantfile配置文件之后你通常的一步是为你使用的Vagrant环境指定容器。
 
-### 安装一个容器
+### 安装容器
 
 如果你已经在开始页面运行了那些命令，那么你已经安装好了一个容器，同时不再需要在运行一次下面的命令。不管怎样，这一节都值得你继续阅读，了解更多关于如何管理容器。
 
@@ -270,19 +270,86 @@ $ vagrant box add hashicorp/precise64
 
 >**命名空间并不保证是官方的容器！**一个通常的错误观念是一个命名空间像"ubuntu"代表着canonical的Ubuntu 容器。这是错误的，命名空间的查找行为跟Github的命名空间非常的相似，比如说，正如Github的支持团队无法协助某个人的仓库一样，HashiCorp的支持团队也无法协助第三方的容器。
 
+### 使用容器
 
+现在容器已经被加入Vagrant，我们需要配置我们的项目才能作为我们的基础环境。打开**Vagrantfile**配置文件，并加入下列改变：
 
+```
+Vagrant.configure("2") do |config|
+  config.vm.box = "hashicorp/precise64"
+end
+```
 
+容器名"hashicorp/precise64"必须和你前面添加进的容器名称相同。根据这个名字Vagrant才知道使用哪个容器。如果这个名字不是之前添加的，Vagrant将在运行时，自动下载并添加该容器。
 
+你可以通过指定**config.vm.box_version**来指定容器的具体的版本，比如
 
+```
+Vagrant.configure("2") do |config|
+  config.vm.box = "hashicorp/precise64"
+  config.vm.box_version = "1.1.0"
+end
+```
 
+你也可以直接使用**config.vm.box_url**指定容器的下载路径：
 
+```
+Vagrant.configure("2") do |config|
+  config.vm.box = "hashicorp/precise64"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+end
+```
+
+在下一节，我们将启动Vagrant 虚拟机，同时交互一下。
+
+### 查找更多的容器
+
+在剩下的入门引导中，我们只使用我们之前添加"hashicorp/precise64"容器，但是在完成入门指导以后，你可能有一个问题，哪里可以找到更多的容器？
+
+ 寻找更多容器的最好地方是[HashiCorp's Atlas box catalog](https://atlas.hashicorp.com/boxes/search)。这里的公共目录有各种可以免费使用并可以运行在各种平台的容器。并且可以很方便的搜索功能方便你找到你所需要的容器。
+
+除此之外，HashiCorp's 可以存储你的私有容器，这样你就可以创建只属于你的组织的容器。
+
+### 下一步
+
+你已经成功的下载了你的第一个Vagrant 容器，并已经配置Vagrantfile文件以使用容器。请继续阅读，了解更多启动和通过SSH登录Vagrant 虚拟机。
+
+---
+
+## 启动和SSH
+
+现在是时候启动你的第一个虚拟机了。运行以下命令：
+
+```shell
+$ vagrant up
+```
+
+大概一分钟不到，这个命令将完成，并运行着一个Ubuntu的虚拟机。因为虚拟机并没有UI界面，所以你并不能真正的看到它。为了证明它已经运行，你可以使用SSH登陆它：
+
+```shell
+$ vagrant ssh
+```
+
+这条命令将打开一个完整的SSH会话，继续和虚拟机交互，你可以做任何你想做的操作，虽然虚拟机是临时的，但是小心**rm -rf /**命令，它将删除所有的文件，因为通过Vagrantfile配置文件，宿主机上配置的目录与虚拟机的/vagrant路径是共享的，这些文件也将被删除。在下一节，将介绍共享文件夹。
+
+花一点时间思考下为什么会这样：只用了一行配置和一个命令，我们就启动了一个有完整的，SSH可以访问的虚拟机，太酷了。SSH会话可以通过**CTRL-D**快捷键结束。
+
+```
+vagrant@precise64:~$ logout
+Connection to 127.0.0.1 closed.
+```
+
+当你摆弄完虚拟机，运行**vagrant destroy**，它将关闭这台虚拟机并删除这台虚拟机全部资源。
+
+>**vagrant destroy**命令不会删除已经下载的容器。如果你需要删除它，你可以使用**vagrant box remove** 命令实现。
+
+### 下一步
+
+你已经成功的创建你的第一个虚拟机，并简单交互了一下。请继续阅读，了解更多关于同步目录。
 
 ---
 
 # 命令行接口
-
-
 
 
 
